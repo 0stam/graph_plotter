@@ -1,0 +1,51 @@
+[gd_scene load_steps=6 format=3 uid="uid://dr7dksajroult"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_y58lq"]
+[ext_resource type="PackedScene" uid="uid://cxacrjgghhfw7" path="res://mouse/mouse.tscn" id="2_5dmmi"]
+[ext_resource type="PackedScene" uid="uid://capxssa58jtre" path="res://camera/camera.tscn" id="3_eyw83"]
+[ext_resource type="PackedScene" uid="uid://bc4wb1vnqogxd" path="res://simple_edit/simple_edit.tscn" id="4_f1dl5"]
+[ext_resource type="PackedScene" uid="uid://csdkvricju8j5" path="res://file_handler/file_handler.tscn" id="5_v4abm"]
+
+[node name="Main" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource( "1_y58lq" )
+
+[node name="Background" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="Background" type="ColorRect" parent="Background"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.207843, 0.564706, 0.647059, 1)
+
+[node name="Connections" type="Control" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+
+[node name="Verticies" type="Control" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+
+[node name="Mouse" parent="." instance=ExtResource( "2_5dmmi" )]
+
+[node name="Camera" parent="." instance=ExtResource( "3_eyw83" )]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="SimpleEdit" parent="UI" instance=ExtResource( "4_f1dl5" )]
+
+[node name="FileHandler" parent="." instance=ExtResource( "5_v4abm" )]
+
+[connection signal="vertex_connection_requested" from="Mouse" to="." method="_on_mouse_vertex_connection_requested"]
+[connection signal="vertex_creation_requested" from="Mouse" to="." method="_on_mouse_vertex_creation_requested"]
+[connection signal="vertex_moved" from="Mouse" to="." method="_on_mouse_vertex_moved"]
+[connection signal="vertex_selected" from="Mouse" to="." method="_on_mouse_vertex_selected"]
+[connection signal="zoom_changed" from="Camera" to="." method="_on_camera_zoom_changed"]
+[connection signal="color_changed" from="UI/SimpleEdit" to="." method="_on_simple_edit_color_changed"]
+[connection signal="name_changed" from="UI/SimpleEdit" to="." method="_on_simple_edit_name_changed"]
+[connection signal="file_opened" from="FileHandler" to="." method="_on_file_handler_file_opened"]

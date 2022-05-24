@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://cip686g5rvjsn"]
+
+[ext_resource type="Texture2D" uid="uid://cloup3xugt4r3" path="res://connection/antialiased_line.png" id="1_b7a1o"]
+[ext_resource type="Script" path="res://connection/connection.gd" id="1_j4n2f"]
+
+[sub_resource type="Gradient" id="Gradient_wj0o2"]
+offsets = PackedFloat32Array(0.3, 0.7)
+
+[node name="Connection" type="Line2D" groups=["connection"]]
+points = PackedVector2Array(133, 175, 405, 304)
+width = 6.0
+gradient = SubResource( "Gradient_wj0o2" )
+texture = ExtResource( "1_b7a1o" )
+texture_mode = 1
+antialiased = true
+script = ExtResource( "1_j4n2f" )
