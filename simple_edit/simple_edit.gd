@@ -41,6 +41,10 @@ func add_color_selection(color: Color):
 	color_selections.add_child(new_selection)
 
 
+func focus_editor() -> void:
+	name_edit.grab_focus()
+
+
 func _on_name_edit_text_changed(new_text: String) -> void:
 	name_changed.emit(new_text)
 
@@ -72,7 +76,7 @@ func _on_name_edit_focus_entered() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
+	if event is InputEventMouseButton and event.pressed:
 		color_picker.hide()  # Hide color picker when clicked elsewhere
 		name_edit.release_focus()
 

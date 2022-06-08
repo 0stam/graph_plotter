@@ -1,10 +1,10 @@
 [gd_scene load_steps=5 format=3 uid="uid://dyqolmn5puvrg"]
 
 [ext_resource type="Script" path="res://graph_vertex/graph_vertex.gd" id="1_ipp1m"]
-[ext_resource type="FontData" uid="uid://bppagmw61k35q" path="res://global/fonts/raw/Roboto-Bold.ttf" id="2_p52jj"]
+[ext_resource type="FontData" uid="uid://d1d04wyk241w4" path="res://global/fonts/raw/Roboto-Black.ttf" id="2_xcgnj"]
 
-[sub_resource type="Font" id="Font_ja0gq"]
-data/0 = ExtResource( "2_p52jj" )
+[sub_resource type="Font" id="Font_f73ss"]
+data/0 = ExtResource( "2_xcgnj" )
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_paduc"]
 
@@ -17,8 +17,8 @@ script = ExtResource( "1_ipp1m" )
 [node name="Label" type="Label" parent="."]
 offset_right = 58.0
 offset_bottom = 45.0
-theme_override_fonts/font = SubResource( "Font_ja0gq" )
-theme_override_font_sizes/font_size = 30
+theme_override_fonts/font = SubResource( "Font_f73ss" )
+theme_override_font_sizes/font_size = 60
 text = "Text"
 
 [node name="MouseCollision" type="Area2D" parent="."]

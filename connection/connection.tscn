@@ -8,7 +8,7 @@ offsets = PackedFloat32Array(0.3, 0.7)
 
 [node name="Connection" type="Line2D" groups=["connection"]]
 points = PackedVector2Array(133, 175, 405, 304)
-width = 6.0
+width = 12.0
 gradient = SubResource( "Gradient_wj0o2" )
 texture = ExtResource( "1_b7a1o" )
 texture_mode = 1

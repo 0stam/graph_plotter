@@ -3,7 +3,7 @@ extends Camera2D
 signal zoom_changed(val: float)
 
 
-var zoom_step: float = 0.1
+var zoom_step: float = 0.05
 var panning: bool = false
 
 
@@ -26,3 +26,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 		zoom -= Vector2(zoom_step, zoom_step)
 		zoom_changed.emit(zoom.x)
+
+
+func _process(_delta: float) -> void:  # Execute once after all nodes in the tree are ready
+	zoom_changed.emit(zoom.x)
+	set_process(false)
+	

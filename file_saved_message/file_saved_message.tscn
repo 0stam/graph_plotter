@@ -1,0 +1,66 @@
+[gd_scene load_steps=7 format=3 uid="uid://bdgmbnfswwfxh"]
+
+[ext_resource type="FontData" uid="uid://d2hpbw1nr8gte" path="res://global/fonts/raw/Roboto-BoldItalic.ttf" id="1_hhmnf"]
+[ext_resource type="Script" path="res://file_saved_message/file_saved_message.gd" id="2_17lym"]
+
+[sub_resource type="Font" id="Font_u3esc"]
+data/0 = ExtResource( "1_hhmnf" )
+
+[sub_resource type="Animation" id="Animation_eo4ju"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_pchmu"]
+resource_name = "pop"
+length = 1.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.4, 1.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_pgj6g"]
+_data = {
+"RESET": SubResource( "Animation_eo4ju" ),
+"pop": SubResource( "Animation_pchmu" )
+}
+
+[node name="FileSavedMessage" type="Label"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -385.0
+offset_top = -104.0
+offset_right = -20.0
+offset_bottom = -20.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 7
+theme_override_fonts/font = SubResource( "Font_u3esc" )
+theme_override_font_sizes/font_size = 70
+text = "FILE SAVED"
+script = ExtResource( "2_17lym" )
+metadata/_edit_use_custom_anchors = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource( "AnimationLibrary_pgj6g" )
+}

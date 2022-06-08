@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://cqdh4iyixu34q"]
+
+[ext_resource type="Script" path="res://arrow/arrows.gd" id="1_mterk"]
+
+[node name="Arrows" type="Node2D"]
+script = ExtResource( "1_mterk" )
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+enabled = false
+hit_from_inside = true
+collide_with_areas = true
+collide_with_bodies = false

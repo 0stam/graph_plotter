@@ -16,10 +16,12 @@ var connection_scene: PackedScene = preload("res://connection/connection.tscn")
 # Children references
 @onready var background: Control = $Background/Background
 @onready var verticies_node: Control = $Verticies
-@onready var connections_node: Control = $Connections
+@onready var connections_node: Node2D = $Connections
+@onready var arrows_node: Node2D = $Arrows
 @onready var mouse: ShapeCast2D = $Mouse
 @onready var simple_edit: Control = $UI/SimpleEdit
 @onready var file_handler: FileHandler = $FileHandler
+@onready var file_saved_message: Label = $UI/FileSavedMessage
 
 # Save the default background color for the purpose of resetting
 @onready var default_background_color: Color = background.color
@@ -50,10 +52,17 @@ func update_connection_position(connection: Connection) -> void:
 		connection.set_vertex_position(id, verticies[id].center)
 
 
-func update_vertex_connections(id: int):
+func update_vertex_connections(id: int) -> void:
 	for connection in verticies_connections[id]:
 		update_connection_color(connection)
 		update_connection_position(connection)
+
+
+func update_vertex_arrows(id: int) -> void:
+	for connection in verticies_connections[id]:
+		var ids: Array[int] = connection.verticies
+		arrows_node.update_arrow(verticies[ids[0]], verticies[ids[1]])
+		arrows_node.update_arrow(verticies[ids[1]], verticies[ids[0]])
 
 
 func remove_connection(from: int, to: int) -> bool:  # Returns true if the connection existed
@@ -66,6 +75,9 @@ func remove_connection(from: int, to: int) -> bool:  # Returns true if the conne
 			for j in len(verticies_connections[to]):
 				if verticies_connections[to][j].is_connected_to_vertex(from):
 					verticies_connections[to].pop_at(j).queue_free()
+					
+					arrows_node.remove_arrow(from, to)
+					arrows_node.remove_arrow(to, from)
 					return true
 	return false
 
@@ -100,20 +112,20 @@ func get_verticies_save_data() -> Dictionary:
 	return data
 
 
-func save() -> void:
-	var data: Dictionary = {
+func get_save_data() -> Dictionary:
+	return {
 		"verticies": get_verticies_save_data(),
 		"connections": get_connections_save_data(),
+		"arrows": arrows_node.get_save_data(),
 		"background_color": background.color
 	}
-	
-	file_handler.save(data)
 
 
 func reset() -> void:
 	# Remove all verticies and connections
 	for node in verticies_node.get_children() + connections_node.get_children():
 		node.queue_free()
+	arrows_node.reset()
 	
 	verticies = {}
 	verticies_connections = {}
@@ -149,8 +161,22 @@ func _on_mouse_vertex_connection_requested(from: int, to: int) -> void:
 	connections_node.add_child(new_connection)
 
 
+func _on_mouse_arrow_creation_requested(from: int, to: int):
+	var connection_creation_required: bool = true
+	for connection in verticies_connections[from]:
+		if connection.is_connected_to_vertex(to):
+			connection_creation_required = false
+			break
+	
+	if connection_creation_required:
+		_on_mouse_vertex_connection_requested(from, to)
+	
+	arrows_node.toggle_arrow(verticies[from], verticies[to])
+
+
 func _on_mouse_vertex_moved(id) -> void:
 	update_vertex_connections(id)
+	update_vertex_arrows(id)
 
 
 func _on_mouse_vertex_selected(vertex: GraphVertex) -> void:
@@ -163,10 +189,14 @@ func _on_mouse_vertex_selected(vertex: GraphVertex) -> void:
 	simple_edit.update_name(vertex.text)  # Display vertex's name in editor
 
 
+func _on_mouse_vertex_double_clicked(vertex: GraphVertex) -> void:
+	simple_edit.focus_editor()
+
+
 func _on_simple_edit_name_changed(new_name: String) -> void:
 	selected.text = new_name
 	selected.update_text()
-	update_vertex_connections(selected.id)
+	update_vertex_arrows(selected.id)
 
 
 func _on_simple_edit_color_changed(new_color: Color) -> void:
@@ -174,6 +204,7 @@ func _on_simple_edit_color_changed(new_color: Color) -> void:
 		selected.background_color = new_color
 		selected.update_colors()
 		update_vertex_connections(selected.id)
+		update_vertex_arrows(selected.id)
 		
 		last_color = new_color  # Save this color as default for new verticies
 	else:
@@ -185,7 +216,6 @@ func _on_camera_zoom_changed(val: float) -> void:
 
 
 func _on_file_handler_file_opened(data: Dictionary) -> void:
-	print(data)  # DEBUG
 	reset()  # Reset everything
 	
 	# Load verticies
@@ -203,7 +233,17 @@ func _on_file_handler_file_opened(data: Dictionary) -> void:
 		for to in data["connections"][from]:
 			_on_mouse_vertex_connection_requested(from, to)
 	
+	await get_tree().physics_frame  # Wait for collision to update, required for arrows creation
+	
+	for from in data["arrows"].keys():
+		for to in data["arrows"][from]:
+			_on_mouse_arrow_creation_requested(from, to)
+	
 	background.color = data["background_color"]
+
+
+func _on_file_handler_file_saved():
+	file_saved_message.pop()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -222,8 +262,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			
 			_on_mouse_vertex_selected(null)  # Reset selection
 	
+	elif event.is_action_pressed("save_as"):
+		file_handler.save_as(get_save_data())
+	
 	elif event.is_action_pressed("save"):
-		save()
+		file_handler.save(get_save_data())
 	
 	elif event.is_action_pressed("open"):
 		file_handler.open()

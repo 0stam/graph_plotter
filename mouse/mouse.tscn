@@ -6,8 +6,13 @@
 radius = 2.0
 
 [node name="Mouse" type="ShapeCast2D"]
+enabled = false
 shape = SubResource( "CircleShape2D_h83a7" )
 target_position = Vector2(0, 0)
 collide_with_areas = true
 collide_with_bodies = false
 script = ExtResource( "1_kobs1" )
+
+[node name="DoubleClick" type="Timer" parent="."]
+wait_time = 0.3
+one_shot = true

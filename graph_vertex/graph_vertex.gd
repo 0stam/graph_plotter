@@ -14,13 +14,14 @@ var auto_text_color: bool = true  # Tellf if the text color is set by user or ch
 var background_color: Color = Color.YELLOW
 var text_color: Color = Color.BLACK
 var text: String = "Text"
-var margin: int = 6
+var margin: Vector2 = Vector2(12, 12)
 
 # Resources
 var style_box: StyleBoxFlat = preload("res://graph_vertex/style_box_template.tres").duplicate(true)
 
 # Children nodes
 @onready var label: Label = $Label
+@onready var mouse_collision: Area2D = $MouseCollision  # Required for arrows placement
 @onready var collision: CollisionShape2D = $MouseCollision/CollisionShape2D
 
 
@@ -37,6 +38,8 @@ func update_colors() -> void:
 
 
 func update_text() -> void:
+	var initial_center_pos: Vector2 = center  # Store center value for the vertex to keep original position
+	
 	label.text = text  # Update label text
 	
 	# Update label size
@@ -44,19 +47,20 @@ func update_text() -> void:
 	var font_size: int = label.get("theme_override_font_sizes/font_size")
 	label.size = font.get_string_size(text, font_size)
 	
-	label.position = Vector2(margin, margin)
+	label.position = margin
 	
-	size = label.size + Vector2(margin, margin) * 2  # Update panel size
-	pivot_offset = size / 2
+	size = label.size + margin * 2  # Update panel size
 	
 	collision.position = size / 2
 	collision.shape.size = size
+	
+	center = initial_center_pos  # Keep the same position after the text change
 
 
 func get_save_data() -> Dictionary:
 	return {
 		"id": id,
-		"position": position,
+		"center": center,
 		"background_color": background_color,
 		"text_color": text_color,
 		"auto_text_color": auto_text_color,
@@ -67,7 +71,7 @@ func get_save_data() -> Dictionary:
 func load_save_data(data: Dictionary) -> void:
 	id = data["id"]
 	text = data["text"]
-	position = data["position"]
+	center = data["center"]
 	background_color = data["background_color"]
 	text_color = data["text_color"]
 	auto_text_color = data["auto_text_color"]
