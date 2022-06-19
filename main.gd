@@ -189,7 +189,7 @@ func _on_mouse_vertex_selected(vertex: GraphVertex) -> void:
 	simple_edit.update_name(vertex.text)  # Display vertex's name in editor
 
 
-func _on_mouse_vertex_double_clicked(vertex: GraphVertex) -> void:
+func _on_mouse_vertex_double_clicked(_vertex: GraphVertex) -> void:
 	simple_edit.focus_editor()
 
 

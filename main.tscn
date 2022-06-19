@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://dr7dksajroult"]
+[gd_scene load_steps=9 format=3 uid="uid://dr7dksajroult"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_y58lq"]
 [ext_resource type="PackedScene" uid="uid://cxacrjgghhfw7" path="res://mouse/mouse.tscn" id="2_5dmmi"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://bc4wb1vnqogxd" path="res://simple_edit/simple_edit.tscn" id="4_f1dl5"]
 [ext_resource type="PackedScene" uid="uid://bdgmbnfswwfxh" path="res://file_saved_message/file_saved_message.tscn" id="5_m0uis"]
 [ext_resource type="PackedScene" uid="uid://csdkvricju8j5" path="res://file_handler/file_handler.tscn" id="5_v4abm"]
+[ext_resource type="PackedScene" uid="uid://c01hpyebart6d" path="res://settings/settings.tscn" id="8_y3cx1"]
 
 [node name="Main" type="Control"]
 anchor_right = 1.0
@@ -44,6 +45,8 @@ mouse_filter = 2
 modulate = Color(1, 1, 1, 0)
 
 [node name="FileHandler" parent="." instance=ExtResource( "5_v4abm" )]
+
+[node name="Settings" parent="." instance=ExtResource( "8_y3cx1" )]
 
 [connection signal="arrow_creation_requested" from="Mouse" to="." method="_on_mouse_arrow_creation_requested"]
 [connection signal="vertex_connection_requested" from="Mouse" to="." method="_on_mouse_vertex_connection_requested"]
