@@ -34,4 +34,3 @@ func get_behavior(key: String) -> Variant:
 func _ready() -> void:
 	load_settings()
 	References.settings = self
-	print("Hello?")

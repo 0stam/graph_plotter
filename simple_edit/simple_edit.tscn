@@ -39,10 +39,10 @@ mouse_filter = 2
 
 [node name="ColorPicker" type="ColorPicker" parent="."]
 visible = false
-offset_left = 36.0
-offset_top = 71.0
-offset_right = 348.0
-offset_bottom = 536.0
+offset_left = 40.0
+offset_top = 75.0
+offset_right = 352.0
+offset_bottom = 540.0
 picker_shape = 2
 presets_visible = false
 

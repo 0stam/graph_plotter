@@ -117,7 +117,8 @@ func get_save_data() -> Dictionary:
 		"verticies": get_verticies_save_data(),
 		"connections": get_connections_save_data(),
 		"arrows": arrows_node.get_save_data(),
-		"background_color": background.color
+		"background_color": background.color,
+		"custom_colors": simple_edit.custom_colors
 	}
 
 
@@ -161,7 +162,7 @@ func _on_mouse_vertex_connection_requested(from: int, to: int) -> void:
 	connections_node.add_child(new_connection)
 
 
-func _on_mouse_arrow_creation_requested(from: int, to: int):
+func _on_mouse_arrow_creation_requested(from: int, to: int) -> void:
 	var connection_creation_required: bool = true
 	for connection in verticies_connections[from]:
 		if connection.is_connected_to_vertex(to):
@@ -235,14 +236,18 @@ func _on_file_handler_file_opened(data: Dictionary) -> void:
 	
 	await get_tree().physics_frame  # Wait for collision to update, required for arrows creation
 	
+	# Load arrows
 	for from in data["arrows"].keys():
 		for to in data["arrows"][from]:
 			_on_mouse_arrow_creation_requested(from, to)
 	
+	# Load custom colors from simple edit
+	simple_edit.update_colors(data["custom_colors"])
+	
 	background.color = data["background_color"]
 
 
-func _on_file_handler_file_saved():
+func _on_file_handler_file_saved() -> void:
 	file_saved_message.pop()
 
 

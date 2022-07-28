@@ -7,6 +7,7 @@ signal color_change_requested(node: ColorRect)
 # Makes sure button won't press when mouse was initially pressed somewhere else
 var pressing_started: bool = false
 
+
 func _on_color_selection_gui_input(event: InputEvent) -> void:
 	if not event is InputEventMouseButton:  # Discard unwanted input
 		return
@@ -20,6 +21,7 @@ func _on_color_selection_gui_input(event: InputEvent) -> void:
 	
 	elif event.button_index == MOUSE_BUTTON_RIGHT and pressing_started:
 		color_change_requested.emit(self)
+	
 	pressing_started = false
 
 

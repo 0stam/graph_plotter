@@ -7,6 +7,8 @@ signal color_changed(new_color: Color)
 const DEFAULT_COLOR_COUNT: int = 35
 const CUSTOM_COLOR_COUNT: int = 100
 
+var custom_colors: Dictionary = {}
+
 # Color selection currently modified by ColorPicker
 var modified_color_selection: ColorRect = null
 
@@ -21,6 +23,26 @@ var color_selection_scene: PackedScene = preload("res://simple_edit/color_select
 
 func update_name(val: String) -> void:  # Update the name in the name editor
 	name_edit.text = val
+
+
+func update_colors(colors: Dictionary = {}) -> void:
+	# Remove old nodes
+	for node in color_selections.get_children():
+		color_selections.remove_child(node)
+	
+	# Create buttons with default colors
+	for i in DEFAULT_COLOR_COUNT:
+		add_color_selection(Color.from_hsv(float(i) / DEFAULT_COLOR_COUNT, 1, 1))
+	
+	add_color_selection(Color.WHITE)
+	
+	for i in CUSTOM_COLOR_COUNT:
+		add_color_selection(Color.BLACK)
+	
+	# Set custom colors
+	custom_colors = colors
+	for node_id in custom_colors:
+		color_selections.get_child(node_id).color = colors[node_id]
 
 
 # Disable/enable name editing and display placeholder text when disabled
@@ -67,6 +89,7 @@ func _on_color_selection_color_change_requested(node: ColorRect):
 
 func _on_color_picker_color_changed(color: Color) -> void:
 	modified_color_selection.color = color
+	custom_colors[modified_color_selection.get_index()] = color
 
 
 func _on_name_edit_focus_entered() -> void:
@@ -82,11 +105,4 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _ready() -> void:
-	# Add color selection buttons
-	for i in DEFAULT_COLOR_COUNT:
-		add_color_selection(Color.from_hsv(float(i) / DEFAULT_COLOR_COUNT, 1, 1))
-	
-	add_color_selection(Color.WHITE)
-	
-	for i in CUSTOM_COLOR_COUNT:
-		add_color_selection(Color.BLACK)
+	update_colors()  # Add color selection buttons
