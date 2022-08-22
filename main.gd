@@ -22,13 +22,14 @@ var connection_scene: PackedScene = preload("res://connection/connection.tscn")
 @onready var simple_edit: Control = $UI/SimpleEdit
 @onready var file_handler: FileHandler = $FileHandler
 @onready var file_saved_message: Label = $UI/FileSavedMessage
+@onready var history: History = $History
 
 # Save the default background color for the purpose of resetting
 @onready var default_background_color: Color = background.color
 
 
 # Create vertex with minimal configuration
-func create_vertex(id: int) -> GraphVertex:
+func get_vertex_template(id: int) -> GraphVertex:
 	var new_vertex: GraphVertex = vertex_scene.instantiate()
 	verticies_node.add_child(new_vertex)
 	
@@ -82,6 +83,46 @@ func remove_connection(from: int, to: int) -> bool:  # Returns true if the conne
 	return false
 
 
+func create_vertex(at_position: Vector2) -> void:
+	var new_vertex: GraphVertex = get_vertex_template(next_vertex_index)
+	new_vertex.center = at_position
+	new_vertex.background_color = last_color
+	new_vertex.update_colors()
+	next_vertex_index += 1
+
+
+func create_connection(from: int, to: int) -> void:
+	if remove_connection(from, to):  # If the connection already exists, remove it
+		return
+	
+	# Create connection with assigned verticies
+	var new_connection: Line2D = connection_scene.instantiate()
+	new_connection.set_verticies([from, to])
+	
+	# Update lists storing connections
+	verticies_connections[from].append(new_connection)
+	verticies_connections[to].append(new_connection)
+	
+	# Update connections based on the assigned verticies
+	update_connection_color(new_connection)
+	update_connection_position(new_connection)
+	
+	connections_node.add_child(new_connection)
+
+
+func create_arrow(from: int, to: int) -> void:
+	var connection_creation_required: bool = true
+	for connection in verticies_connections[from]:
+		if connection.is_connected_to_vertex(to):
+			connection_creation_required = false
+			break
+	
+	if connection_creation_required:
+		create_connection(from, to)
+	
+	arrows_node.toggle_arrow(verticies[from], verticies[to])
+
+
 func get_connections_save_data() -> Dictionary:
 	var data: Dictionary = {}  # Resulting dictionary with all connections stored only once
 	
@@ -122,6 +163,37 @@ func get_save_data() -> Dictionary:
 	}
 
 
+func load_save_data(data: Dictionary) -> void:
+	reset()  # Reset everything
+	
+	# Load verticies
+	for vertex_data in data["verticies"].values():
+		var id: int = vertex_data["id"]
+		var new_vertex: GraphVertex = get_vertex_template(id)
+		new_vertex.load_save_data(vertex_data)
+		
+		# Update id for new verticies if necessary
+		if id >= next_vertex_index:
+			next_vertex_index = id + 1
+	
+	# Load connections
+	for from in data["connections"].keys():
+		for to in data["connections"][from]:
+			create_connection(from, to)
+	
+	await get_tree().physics_frame  # Wait for collision to update, required for arrows creation
+	
+	# Load arrows
+	for from in data["arrows"].keys():
+		for to in data["arrows"][from]:
+			create_arrow(from, to)
+	
+	# Load custom colors from simple edit
+	simple_edit.update_colors(data["custom_colors"])
+	
+	background.color = data["background_color"]
+
+
 func reset() -> void:
 	# Remove all verticies and connections
 	for node in verticies_node.get_children() + connections_node.get_children():
@@ -134,45 +206,20 @@ func reset() -> void:
 	_on_mouse_vertex_selected(null)
 
 
-# Create vertex and configure it based on the user-selected values and position
+func register_action() -> void:
+	history.register_action(get_save_data())
+
+
 func _on_mouse_vertex_creation_requested(at_position: Vector2) -> void:
-	var new_vertex: GraphVertex = create_vertex(next_vertex_index)
-	new_vertex.center = at_position
-	new_vertex.background_color = last_color
-	new_vertex.update_colors()
-	next_vertex_index += 1
+	create_vertex(at_position)
 
 
 func _on_mouse_vertex_connection_requested(from: int, to: int) -> void:
-	if remove_connection(from, to):  # If the connection already exists, remove it
-		return
-	
-	# Create connection with assigned verticies
-	var new_connection: Line2D = connection_scene.instantiate()
-	new_connection.set_verticies([from, to])
-	
-	# Update lists storing connections
-	verticies_connections[from].append(new_connection)
-	verticies_connections[to].append(new_connection)
-	
-	# Update connections based on the assigned verticies
-	update_connection_color(new_connection)
-	update_connection_position(new_connection)
-	
-	connections_node.add_child(new_connection)
+	create_connection(from, to)
 
 
 func _on_mouse_arrow_creation_requested(from: int, to: int) -> void:
-	var connection_creation_required: bool = true
-	for connection in verticies_connections[from]:
-		if connection.is_connected_to_vertex(to):
-			connection_creation_required = false
-			break
-	
-	if connection_creation_required:
-		_on_mouse_vertex_connection_requested(from, to)
-	
-	arrows_node.toggle_arrow(verticies[from], verticies[to])
+	create_arrow(from, to)
 
 
 func _on_mouse_vertex_moved(id) -> void:
@@ -194,10 +241,16 @@ func _on_mouse_vertex_double_clicked(_vertex: GraphVertex) -> void:
 	simple_edit.focus_editor()
 
 
+func _on_mouse_action_registration_requested() -> void:
+	register_action()
+
+
 func _on_simple_edit_name_changed(new_name: String) -> void:
 	selected.text = new_name
 	selected.update_text()
 	update_vertex_arrows(selected.id)
+	
+	register_action()
 
 
 func _on_simple_edit_color_changed(new_color: Color) -> void:
@@ -210,6 +263,8 @@ func _on_simple_edit_color_changed(new_color: Color) -> void:
 		last_color = new_color  # Save this color as default for new verticies
 	else:
 		background.color = new_color
+	
+	register_action()
 
 
 func _on_camera_zoom_changed(val: float) -> void:
@@ -217,34 +272,8 @@ func _on_camera_zoom_changed(val: float) -> void:
 
 
 func _on_file_handler_file_opened(data: Dictionary) -> void:
-	reset()  # Reset everything
-	
-	# Load verticies
-	for vertex_data in data["verticies"].values():
-		var id: int = vertex_data["id"]
-		var new_vertex: GraphVertex = create_vertex(id)
-		new_vertex.load_save_data(vertex_data)
-		
-		# Update id for new verticies if necessary
-		if id >= next_vertex_index:
-			next_vertex_index = id + 1
-	
-	# Load connections
-	for from in data["connections"].keys():
-		for to in data["connections"][from]:
-			_on_mouse_vertex_connection_requested(from, to)
-	
-	await get_tree().physics_frame  # Wait for collision to update, required for arrows creation
-	
-	# Load arrows
-	for from in data["arrows"].keys():
-		for to in data["arrows"][from]:
-			_on_mouse_arrow_creation_requested(from, to)
-	
-	# Load custom colors from simple edit
-	simple_edit.update_colors(data["custom_colors"])
-	
-	background.color = data["background_color"]
+	load_save_data(data)
+	register_action()
 
 
 func _on_file_handler_file_saved() -> void:
@@ -266,6 +295,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			selected.queue_free()  # Remove node
 			
 			_on_mouse_vertex_selected(null)  # Reset selection
+			
+			register_action()
 	
 	elif event.is_action_pressed("save_as"):
 		file_handler.save_as(get_save_data())
@@ -275,3 +306,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	
 	elif event.is_action_pressed("open"):
 		file_handler.open()
+
+
+func _on_history_graph_state_change_requested(graph_state) -> void:
+	load_save_data(graph_state)
+
+
+func _on_history_ready_finished() -> void:
+	register_action()

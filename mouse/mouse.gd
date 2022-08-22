@@ -3,12 +3,16 @@ extends ShapeCast2D
 signal vertex_connection_requested(from: int, to: int)
 signal arrow_creation_requested(from: int, to: int)
 signal vertex_creation_requested(at_position: Vector2)
-signal vertex_moved(id: int)
+signal vertex_moved(id: int, silent: bool)
+
 signal vertex_selected(vertex: GraphVertex)
 signal vertex_double_clicked(vertex: GraphVertex)
 
+signal action_registration_requested
+
 var zoom: float = 1  # Required for scaling vertex movement
 var dragged_node: GraphVertex  # Currently dragged node
+var dragged_node_start_center: Vector2  # Used to determine if the node was moved
 var center_offset: Vector2  # Difference between mouse position and the node's center
 
 # Determine if the action was started
@@ -74,6 +78,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			if dragged_node:  # If connecting, queue an update and continue
 				update_required = true
 			else:  # If not connecting, the job is done
+				action_registration_requested.emit()
 				return
 		elif dragged_node == target:
 			return
@@ -100,6 +105,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		
 		
 		vertex_selected.emit(target)
+		action_registration_requested.emit()
 		connecting = false
 		creating_arrow = false
 	
@@ -113,17 +119,19 @@ func _unhandled_input(event: InputEvent) -> void:
 		dragged_node = get_vertex()
 		vertex_selected.emit(dragged_node)
 		moving = dragged_node != null
-		if moving:
-			center_offset = get_global_mouse_position() - dragged_node.center
+		if moving:  # If the moving has started, remember the original position
+			dragged_node_start_center = dragged_node.center
 	
 	# Stop moving a vertex
 	elif event.is_action_released("select"):
+		if moving and dragged_node.center != dragged_node_start_center:
+			action_registration_requested.emit()
+		
 		dragged_node = null
 		moving = false
 	
 	# If the mouse position changed and user is holding a vertex, move it
 	elif event is InputEventMouseMotion and moving:
-#		dragged_node.position += event.relative / zoom
 		dragged_node.center = get_global_mouse_position() - center_offset
 		
 		if settings.get_behavior("grid_snapping"):
