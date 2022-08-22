@@ -8,6 +8,7 @@ var verticies_connections: Dictionary = {}
 var next_vertex_index: int = 0
 var selected: GraphVertex = null
 var last_color: Color = Color.YELLOW
+var name_changed: bool = false  # If the vertex's name has changed, queue an action registration
 
 # Packed Scenes
 var vertex_scene: PackedScene = preload("res://graph_vertex/graph_vertex.tscn")
@@ -231,6 +232,10 @@ func _on_mouse_vertex_selected(vertex: GraphVertex) -> void:
 	selected = vertex
 	simple_edit.set_enabled(vertex != null)  # Disable name edit
 	
+	if name_changed:  # Register action for history if vertex's name has changed
+		register_action()
+		name_changed = false
+	
 	if not vertex:  # If the background was selected, return
 		return
 	
@@ -250,7 +255,7 @@ func _on_simple_edit_name_changed(new_name: String) -> void:
 	selected.update_text()
 	update_vertex_arrows(selected.id)
 	
-	register_action()
+	name_changed = true
 
 
 func _on_simple_edit_color_changed(new_color: Color) -> void:

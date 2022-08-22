@@ -61,6 +61,7 @@ offset_bottom = -2.0
 [connection signal="vertex_selected" from="Mouse" to="." method="_on_mouse_vertex_selected"]
 [connection signal="zoom_changed" from="Camera" to="." method="_on_camera_zoom_changed"]
 [connection signal="color_changed" from="UI/SimpleEdit" to="." method="_on_simple_edit_color_changed"]
+[connection signal="name_changed" from="UI/SimpleEdit" to="." method="_on_simple_edit_name_changed"]
 [connection signal="file_opened" from="FileHandler" to="." method="_on_file_handler_file_opened"]
 [connection signal="file_saved" from="FileHandler" to="." method="_on_file_handler_file_saved"]
 [connection signal="graph_state_change_requested" from="History" to="." method="_on_history_graph_state_change_requested"]
