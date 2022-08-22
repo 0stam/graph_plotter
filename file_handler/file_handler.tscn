@@ -5,6 +5,6 @@
 [node name="FileHandler" type="FileDialog"]
 access = 2
 filters = PackedStringArray("*.graph_map ; Graph Map Files")
-script = ExtResource( "1_ti78j" )
+script = ExtResource("1_ti78j")
 
 [connection signal="file_selected" from="." to="." method="_on_file_handler_file_selected"]

@@ -4,16 +4,16 @@
 [ext_resource type="PackedScene" uid="uid://cxacrjgghhfw7" path="res://mouse/mouse.tscn" id="2_5dmmi"]
 [ext_resource type="PackedScene" uid="uid://cqdh4iyixu34q" path="res://arrow/arrows.tscn" id="2_x4k6s"]
 [ext_resource type="PackedScene" uid="uid://capxssa58jtre" path="res://camera/camera.tscn" id="3_eyw83"]
-[ext_resource type="PackedScene" uid="uid://bc4wb1vnqogxd" path="res://simple_edit/simple_edit.tscn" id="4_f1dl5"]
-[ext_resource type="PackedScene" uid="uid://bdgmbnfswwfxh" path="res://file_saved_message/file_saved_message.tscn" id="5_m0uis"]
+[ext_resource type="PackedScene" uid="uid://bc4wb1vnqogxd" path="res://simple_edit/simple_edit.tscn" id="5_qli4b"]
 [ext_resource type="PackedScene" uid="uid://csdkvricju8j5" path="res://file_handler/file_handler.tscn" id="5_v4abm"]
+[ext_resource type="PackedScene" uid="uid://bdgmbnfswwfxh" path="res://file_saved_message/file_saved_message.tscn" id="6_fbwtk"]
 [ext_resource type="PackedScene" uid="uid://c01hpyebart6d" path="res://settings/settings.tscn" id="8_y3cx1"]
 
 [node name="Main" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-script = ExtResource( "1_y58lq" )
+script = ExtResource("1_y58lq")
 
 [node name="Background" type="CanvasLayer" parent="."]
 layer = -1
@@ -26,28 +26,30 @@ color = Color(0.207843, 0.564706, 0.647059, 1)
 
 [node name="Connections" type="Node2D" parent="."]
 
-[node name="Arrows" parent="." instance=ExtResource( "2_x4k6s" )]
+[node name="Arrows" parent="." instance=ExtResource("2_x4k6s")]
 
 [node name="Verticies" type="Control" parent="."]
 offset_right = 40.0
 offset_bottom = 40.0
 mouse_filter = 2
 
-[node name="Mouse" parent="." instance=ExtResource( "2_5dmmi" )]
+[node name="Mouse" parent="." instance=ExtResource("2_5dmmi")]
 
-[node name="Camera" parent="." instance=ExtResource( "3_eyw83" )]
+[node name="Camera" parent="." instance=ExtResource("3_eyw83")]
 
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="SimpleEdit" parent="UI" instance=ExtResource( "4_f1dl5" )]
+[node name="SimpleEdit" parent="UI" instance=ExtResource("5_qli4b")]
+offset_top = -2.0
+offset_bottom = -2.0
 
-[node name="FileSavedMessage" parent="UI" instance=ExtResource( "5_m0uis" )]
-modulate = Color(1, 1, 1, 0)
+[node name="FileSavedMessage" parent="UI" instance=ExtResource("6_fbwtk")]
 
-[node name="FileHandler" parent="." instance=ExtResource( "5_v4abm" )]
+[node name="FileHandler" parent="." instance=ExtResource("5_v4abm")]
 
-[node name="Settings" parent="." instance=ExtResource( "8_y3cx1" )]
+[node name="Settings" parent="." instance=ExtResource("8_y3cx1")]
 
+[connection signal="action_registration_requested" from="Mouse" to="." method="_on_mouse_action_registration_requested"]
 [connection signal="arrow_creation_requested" from="Mouse" to="." method="_on_mouse_arrow_creation_requested"]
 [connection signal="vertex_connection_requested" from="Mouse" to="." method="_on_mouse_vertex_connection_requested"]
 [connection signal="vertex_creation_requested" from="Mouse" to="." method="_on_mouse_vertex_creation_requested"]
@@ -56,6 +58,5 @@ modulate = Color(1, 1, 1, 0)
 [connection signal="vertex_selected" from="Mouse" to="." method="_on_mouse_vertex_selected"]
 [connection signal="zoom_changed" from="Camera" to="." method="_on_camera_zoom_changed"]
 [connection signal="color_changed" from="UI/SimpleEdit" to="." method="_on_simple_edit_color_changed"]
-[connection signal="name_changed" from="UI/SimpleEdit" to="." method="_on_simple_edit_name_changed"]
 [connection signal="file_opened" from="FileHandler" to="." method="_on_file_handler_file_opened"]
 [connection signal="file_saved" from="FileHandler" to="." method="_on_file_handler_file_saved"]

@@ -1,10 +1,11 @@
 [gd_scene load_steps=5 format=3 uid="uid://dyqolmn5puvrg"]
 
 [ext_resource type="Script" path="res://graph_vertex/graph_vertex.gd" id="1_ipp1m"]
-[ext_resource type="FontData" uid="uid://d1d04wyk241w4" path="res://global/fonts/raw/Roboto-Black.ttf" id="2_xcgnj"]
+[ext_resource type="FontFile" uid="uid://d1d04wyk241w4" path="res://global/fonts/raw/Roboto-Black.ttf" id="2_86o4s"]
 
-[sub_resource type="Font" id="Font_f73ss"]
-data/0 = ExtResource( "2_xcgnj" )
+[sub_resource type="LabelSettings" id="LabelSettings_6t1xb"]
+font = ExtResource("2_86o4s")
+font_size = 60
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_paduc"]
 
@@ -12,17 +13,17 @@ data/0 = ExtResource( "2_xcgnj" )
 offset_right = 325.0
 offset_bottom = 49.0
 mouse_filter = 2
-script = ExtResource( "1_ipp1m" )
+script = ExtResource("1_ipp1m")
 
 [node name="Label" type="Label" parent="."]
 offset_right = 58.0
 offset_bottom = 45.0
-theme_override_fonts/font = SubResource( "Font_f73ss" )
 theme_override_font_sizes/font_size = 60
 text = "Text"
+label_settings = SubResource("LabelSettings_6t1xb")
 
 [node name="MouseCollision" type="Area2D" parent="."]
 monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MouseCollision"]
-shape = SubResource( "RectangleShape2D_paduc" )
+shape = SubResource("RectangleShape2D_paduc")

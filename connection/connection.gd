@@ -23,7 +23,10 @@ func set_vertex_position(id: int, to_position: Vector2):
 
 func set_vertex_color(id: int, val: Color):
 	if id in verticies:  # Validate if this connection should update
-		gradient.colors[verticies.find(id)] = val
+		# Workaround for https://github.com/godotengine/godot/issues/62857
+		var colors: PackedColorArray = gradient.colors
+		colors[verticies.find(id)] = val
+		gradient.colors = colors
 
 
 func _ready() -> void:

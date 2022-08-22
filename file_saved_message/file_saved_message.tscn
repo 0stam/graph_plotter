@@ -1,10 +1,13 @@
 [gd_scene load_steps=7 format=3 uid="uid://bdgmbnfswwfxh"]
 
-[ext_resource type="FontData" uid="uid://d2hpbw1nr8gte" path="res://global/fonts/raw/Roboto-BoldItalic.ttf" id="1_hhmnf"]
+[ext_resource type="FontFile" uid="uid://d2hpbw1nr8gte" path="res://global/fonts/raw/Roboto-BoldItalic.ttf" id="1_fxldw"]
 [ext_resource type="Script" path="res://file_saved_message/file_saved_message.gd" id="2_17lym"]
 
-[sub_resource type="Font" id="Font_u3esc"]
-data/0 = ExtResource( "1_hhmnf" )
+[sub_resource type="LabelSettings" id="LabelSettings_n8syr"]
+font = ExtResource("1_fxldw")
+font_size = 70
+outline_size = 7
+outline_color = Color(0, 0, 0, 1)
 
 [sub_resource type="Animation" id="Animation_eo4ju"]
 length = 0.001
@@ -39,11 +42,12 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_pgj6g"]
 _data = {
-"RESET": SubResource( "Animation_eo4ju" ),
-"pop": SubResource( "Animation_pchmu" )
+"RESET": SubResource("Animation_eo4ju"),
+"pop": SubResource("Animation_pchmu")
 }
 
 [node name="FileSavedMessage" type="Label"]
+modulate = Color(1, 1, 1, 0)
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -54,13 +58,13 @@ offset_right = -20.0
 offset_bottom = -20.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 7
-theme_override_fonts/font = SubResource( "Font_u3esc" )
 theme_override_font_sizes/font_size = 70
 text = "FILE SAVED"
-script = ExtResource( "2_17lym" )
+label_settings = SubResource("LabelSettings_n8syr")
+script = ExtResource("2_17lym")
 metadata/_edit_use_custom_anchors = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource( "AnimationLibrary_pgj6g" )
+"": SubResource("AnimationLibrary_pgj6g")
 }

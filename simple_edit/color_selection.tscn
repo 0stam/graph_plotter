@@ -3,12 +3,11 @@
 [ext_resource type="Script" path="res://simple_edit/color_selection.gd" id="1_mui4w"]
 
 [node name="ColorSelection" type="ColorRect"]
-minimum_size = Vector2(32, 32)
-offset_left = 304.0
-offset_right = 304.0
+custom_minimum_size = Vector2(32, 32)
+offset_right = 32.0
 offset_bottom = 32.0
 color = Color(0.603922, 0.803922, 0.196078, 1)
-script = ExtResource( "1_mui4w" )
+script = ExtResource("1_mui4w")
 
 [connection signal="gui_input" from="." to="." method="_on_color_selection_gui_input"]
 [connection signal="mouse_exited" from="." to="." method="_on_color_selection_mouse_exited"]

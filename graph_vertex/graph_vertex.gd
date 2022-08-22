@@ -34,7 +34,7 @@ func update_colors() -> void:
 			text_color = Color.BLACK
 		else:
 			text_color = Color.WHITE
-	label.set("theme_override_colors/font_color", text_color)
+	label.label_settings.font_color = text_color
 
 
 func update_text() -> void:
@@ -43,8 +43,8 @@ func update_text() -> void:
 	label.text = text  # Update label text
 	
 	# Update label size
-	var font: Font = label.get("theme_override_fonts/font")
-	var font_size: int = label.get("theme_override_font_sizes/font_size")
+	var font: Font = label.label_settings.font
+	var font_size: int = label.label_settings.font_size
 	label.size = font.get_string_size(text, font_size)
 	
 	label.position = margin
@@ -82,6 +82,9 @@ func load_save_data(data: Dictionary) -> void:
 
 func _ready() -> void:
 	set("theme_override_styles/panel", style_box)  # Set custom stylebox
+	
 	collision.shape = collision.shape.duplicate(true)  # Make CollisionShape resource unique
+	label.label_settings = label.label_settings.duplicate()  # Make LabelSettings resource unique
+	
 	update_colors()
 	update_text()
