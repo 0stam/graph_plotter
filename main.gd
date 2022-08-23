@@ -224,6 +224,8 @@ func _on_mouse_arrow_creation_requested(from: int, to: int) -> void:
 
 
 func _on_mouse_vertex_moved(id) -> void:
+	if not id in verticies:  # If the node was queued for a deletion this frame
+		return
 	update_vertex_connections(id)
 	update_vertex_arrows(id)
 

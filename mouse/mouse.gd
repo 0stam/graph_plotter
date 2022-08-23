@@ -124,14 +124,20 @@ func _unhandled_input(event: InputEvent) -> void:
 	
 	# Stop moving a vertex
 	elif event.is_action_released("select"):
-		if moving and dragged_node.center != dragged_node_start_center:
-			action_registration_requested.emit()
+		if moving and is_instance_valid(dragged_node):
+			print(dragged_node)
+			if dragged_node.center != dragged_node_start_center:
+				action_registration_requested.emit()
 		
 		dragged_node = null
 		moving = false
 	
 	# If the mouse position changed and user is holding a vertex, move it
 	elif event is InputEventMouseMotion and moving:
+		if not is_instance_valid(dragged_node):  # If the node was deleted in the meanwhile
+			moving = false
+			return
+		
 		dragged_node.center = get_global_mouse_position() - center_offset
 		
 		if settings.get_behavior("grid_snapping"):
